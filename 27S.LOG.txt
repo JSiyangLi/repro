@@ -1,0 +1,173 @@
+﻿* https://cxc.harvard.edu/ciao/guides/hrc_data.html
+ 
+download_chandra_obsid 27
+chandra_repro 27
+cd 27/repro
+ 
+# http://asc.harvard.edu/ciao/threads/expmap_hrc/
+ 
+punlearn asphist
+asphist infile=../primary/pcadf00027_000N001_asol1.fits \
+         outfile=27.asphist evtfile="hrcf00027_repro_evt2.fits[chip_id=0]" \
+         dtffile=../primary/hrcf00027_000N008_dtf1.fits
+ 
+# find the range of events in pixel coordinates
+from astropy.io import fits
+evtfile = os.path.join(base_dir, "hrcf00027_repro_evt2.fits")
+
+
+
+
+
+
+with fits.open(evtfile) as hdul:
+
+
+        data = hdul[1].data
+
+
+        evtX = data['x']
+
+
+        evtY = data['y']
+
+
+
+
+
+
+print(np.min(evtX))
+
+
+print(np.max(evtX))
+
+
+print(np.min(evtY))
+
+
+print(np.max(evtY))
+ 
+## bin
+punlearn dmcopy
+dmcopy "hrcf00027_repro_evt2.fits[bin x=7626:25316:#17690, y=7626:25316:#17690] [opt mem=750]" 27_b1.fits clobber=yes
+
+
+punlearn dmcopy
+dmcopy "hrcf00027_repro_evt2.fits[bin x=32,y=32]" 27_b32.fits
+dmcopy "hrcf00027_repro_evt2.fits[bin x=12288.5:20480.5:#1024, y=12288.5:20480.5:#1024]" 27_b08.fits clobber=yes verbose=2
+ 
+punlearn mkpsfmap
+mkpsfmap 27_b1.fits 27_b1_psf.fits energy=1.5 spectrum=none ecf=0.90 units=arcsec clobber=yes
+ 
+punlearn mkinstmap
+mkinstmap obsfile="27.asphist[asphist]" outfile=b1_inst.map \
+         det=HRC-I pixelgrid="3813:12658:#8845, 3813:12658:#8845" \
+         spectrumfile=NONE monoenergy=1.0 \
+         detsubsys=HRC-I grating=NONE maskfile=NONE verbose=3 clobber=yes
+punlearn mkinstmap
+mkinstmap obsfile="27.asphist[asphist]" outfile=b32_inst.map \
+        det=HRC-I pixelgrid="1:16384:#1024,1:16384:#1024" \
+        spectrumfile=NONE monoenergy=1.0 \
+        detsubsys=HRC-I grating=NONE maskfile=NONE verbose=3 clobber=yes
+ 
+punlearn mkexpmap
+get_sky_limits 27_b1.fits
+#Running: get_sky_limits
+#  version: 07 October 2016
+#Checking binning of image: 27_b1.fits
+#  Image has 17690 x 17690 pixels
+#  Pixel size is 1.0 by 1.0
+#  Lower left (0.5,0.5) corner is x,y= 7626.0, 7626.0
+#  Upper right (17690.5,17690.5) corner is x,y= 25316.0, 25316.0
+#  DM filter is:
+#    x=7626.0:25316.0:#17690,y=7626.0:25316.0:#17690
+#  mkexpmap xygrid value is:
+#    7626.0:25316.0:#17690,7626.0:25316.0:#17690
+#mkexpmap instmapfile=b1_inst.map outfile=27_b1.emap \
+#       xygrid=")get_sky_limits.xygrid" \
+#       asphistfile=27.asphist normalize=no useavgaspect=no \
+#       clobber=yes verbose=2
+ 
+mkexpmap instmapfile=b1_inst.map outfile=27_b1.emap \
+       xygrid=")get_sky_limits.xygrid" \
+       asphistfile=27.asphist normalize=no useavgaspect=no \
+       clobber=yes verbose=2
+#Computing a 17690 x 17690 exposure map for #a sky region with
+#   7626 <= X < 25316 and 7626 <= Y < 25316.
+#Reading observation information from #b1_inst.map
+#Initializing Pixlib...done.
+# HRC-I: Chip size: 16384 x 16384
+# Focal Plane Info: Size: 32767x32767, #Center at: (16384.5, 16384.5)
+# Nominal Aimpoint at FPC coord (16384.5, #16384.5)
+#Reading aspect histogram 27.asphist.
+# Total Number of Aspect Points: 6419
+# Average X Offset: 4.234712e-01 pixels
+# Average Y Offset: 6.620527e-01 pixels
+#     Average Roll: 3.312722e+02 degrees
+#         Exposure: 4.876515e+04 seconds
+#Reading Instrument Map b1_inst.map.
+#Using instrument map scaling:
+# scale[0]=0.9998869545557173, offset[0]=-#3811.5690142436601
+# crpix[0]=1, crval[0]=3813.0000565291002, #cdelt[0]=1.000113058225
+# scale[1]=0.9998869545557173, offset[1]=-#3811.5690142436601
+# crpix[1]=1, crval[1]=3813.0000565291002, #cdelt[1]=1.000113058225
+#Exposure map limits: 0.000000e+00, #1.185825e+07
+#Writing exposure map to 27_b1.emap
+ 
+punlearn mkexpmap
+get_sky_limits 27_b32.fits
+#Running: get_sky_limits
+#  version: 07 October 2016
+#Checking binning of image: 27_b32.fits
+#  Image has 1024 x 1024 pixels
+#  Pixel size is 32.0 by 32.0
+#  Lower left (0.5,0.5) corner is x,y= 0.5, 0.5
+#  Upper right (1024.5,1024.5) corner is x,y= 32768.5, 32768.5
+#  DM filter is:
+#    x=0.5:32768.5:#1024,y=0.5:32768.5:#1024
+#  mkexpmap xygrid value is:
+#    0.5:32768.5:#1024,0.5:32768.5:#1024
+
+
+mkexpmap instmapfile=b32_inst.map outfile=27_b32.emap \
+        xygrid=")get_sky_limits.xygrid" \
+        asphistfile=27.asphist normalize=no useavgaspect=no \
+        clobber=yes verbose=2
+
+
+punlearn mkexpmap
+get_sky_limits 27_b08.fits 
+#Running: get_sky_limits
+#  version: 07 October 2016
+#Checking binning of image: 27_b08.fits
+#  Image has 1024 x 1024 pixels
+#  Pixel size is 8.0 by 8.0
+#  Lower left (0.5,0.5) corner is x,y= 12288.5, 12288.5
+#  Upper right (1024.5,1024.5) corner is x,y= 20480.5, 20480.5
+#  DM filter is:
+#    x=12288.5:20480.5:#1024,y=12288.5:20480.5:#1024
+#  mkexpmap xygrid value is:
+#    12288.5:20480.5:#1024,12288.5:20480.5:#1024
+
+
+mkexpmap instmapfile=b32_inst.map outfile=27_b08.emap \
+        xygrid=")get_sky_limits.xygrid" \
+        asphistfile=27.asphist normalize=no useavgaspect=no \
+        clobber=yes verbose=2
+ 
+punlearn wavdetect
+wavdetect infile=27_b1.fits outfile=27_b1.wsrc scellfile=27_b1.scell \
+         imagefile=27_b1.srcimg defnbkgfile=27_b1.defnbkg psffile=27_b1_psf.fits \
+         clobber=yes verbose=3 sigthresh=1e-06 expfile=27_b1.emap \
+         expthresh=0.5 \
+clobber=yes \
+         regfile=27_b1_src.reg scales="1 2 4 8 16" maxiter=4
+ 
+dmlist 27_b1.wsrc data,clean | grep -v ^# | awk '{print $1, $2}' > 27_b1.wsrc.radec
+dmlist 27_b1.wsrc data,clean | grep -v ^# | awk '{print $5, $6}' > 27_b1.wsrc.xy
+
+
+mkdir python_analysis
+
+
+# Then see github repro
