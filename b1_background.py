@@ -1,4 +1,3 @@
-import merge_files
 from circfun import filter_evt_for_bkgd, save_bkgd_to_txt
 import os
 from catfun import parse_circle_file_pixel, extract_theta
@@ -6,12 +5,11 @@ import numpy as np
 from astropy.io import fits
 from ciao_contrib.runtool import dmcoords
 
-os.system('python merge_files.py')
 # 1. Get absolute paths to all files
 base_dir = os.path.dirname(os.path.abspath(__file__))  # Script's directory
 evtfile = os.path.join(base_dir, "hrcf00027_repro_evt2.fits")
-region_file = os.path.join(base_dir, "all_sources.xyreg")
-theta_file = os.path.join(base_dir, "all_sources.xyoffx")
+region_file = os.path.join(base_dir, "all+phantom_sources.xyreg")
+theta_file = os.path.join(base_dir, "all+phantom_sources.xyoffx")
 
 # 2. Verify files exist before processing
 if not all(os.path.exists(f) for f in [evtfile, region_file]):
