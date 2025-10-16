@@ -37,5 +37,3 @@ def merge_txt_files(file1_path, file2_path, output_path):
         print(f"An error occurred: {e}")
 
 
-merge_txt_files("b1_xray.xyreg", "cbind_sub_cleared.xyreg", "all_sources.xyreg")
-merge_txt_files("b1_xray.xyoffx", 'cbind_sub_cleared.xyoffx', "all_sources.xyoffx")
