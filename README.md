@@ -7,6 +7,7 @@ re-processing of NGC2516 observation on 27, and generate covariates
    xx1 -> xx2 ->xx3.
 3. for optical catalogues:
    o1 -> o2 -> o3 -> o4.
-4. for background: b1.
-5. for subsequent analysis, e.g. samplers and MGF marginalisation methods:
+4. for background:
+   b0 -> b1.
+6. for subsequent analysis, e.g. samplers and MGF marginalisation methods:
    see repositories "sint" and "BMGF".
